@@ -90,23 +90,32 @@ A <-5
 B <- 10
 C<-A+B
 print(C)
+#calculate the mean of a string of numbers
+mynumbers<- c(1,3,7,12,46)
+base::mean(mynumbers)#use function mean from package base
+?mean
 ```
 
+
+make a plot
 ```{r, message = FALSE, warning = FALSE}
 #| label: fig-histogram
 #| fig-cap: Histogram of 100 random values from a normal distribution with 0 mean and 1 standard deviation
 
 library(tidyverse)
+library(ggplot2)
 # set the seed of the random number generator (gives same result)
 set.seed(123)
 # generate 100 random values form a normal distribution with mean=0 and standard deviation 1
 randomvalue <- rnorm(n = 100, mean = 0, sd = 1)
+print(randomvalue)
 # convert to a dataframe
 data1<-data.frame(randomvalue)
-# plot as a histogram
+# plot as a histogram #from library ggplot2, use function ggplot
 ggplot2::ggplot(data=data1, 
-                mapping=aes(x=randomvalue)) +
+                mapping=aes(x=randomvalue))+
   geom_histogram()
+
 
 ```
 
