@@ -19,6 +19,13 @@ This ensures that your project uses the exact same package versions and dependen
 
 Make sure that before you use renv::restore(), you have rtools installed. This is a set of tools that are needed to compile some packages from source. Install the RTools version that matches your R version. So if you have R version 4.4 you need RTools 44. You can download rtools from the [CRAN website at this link](https://cran.r-project.org/bin/windows/Rtools/), and choose the Rtools installer, using default installation settings.
 
+When you start a new project:
+go to tools, install packages, select renv
+
+```{r}
+renv::init()
+```
+
 Here is how to use restore:
 
 ```{r}
