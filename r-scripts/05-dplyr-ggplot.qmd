@@ -6,6 +6,9 @@ format: html
 editor: 
   markdown: 
     wrap: 72
+editor_options:
+  chunck_output_type: console
+  chunk_output_type: console
 ---
 
 # Working with the dplyr and ggplot2 packages
@@ -45,6 +48,11 @@ Read the FactCockleSize table with read_csv, which reads it as tibble
 
 ```{r}
 FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")
+
+print(FactCockleSize)
+names(FactCockleSize)
+nrow(FactCockleSize)
+
 ```
 
 Plot with ggplot the relation between cockle thickness (thickness_mm, as
@@ -52,7 +60,23 @@ x) and length (length_mm), showing each year with a different color, and
 add a regression line through all the years
 
 ```{r}
+ggplot2::ggplot(data=FactCockleSize,#what datatable to use
+                mapping=aes(x=length_mm,y=thickness_mm)) + #what is on the axes
+  geom_point()
+#there is a big outlier, which is likely a data entry mistake, remove it (only when you have good reasons to do so, when biologically impossible).one cockle is 1500 mm thick, not possible.
+FactCockleSize|> dplyr::filter(thickness_mm<500) #to remove the mistake
 
+FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")|> dplyr::filter(thickness_mm<500) #in een keer goede data set zonder outlier
+
+#then you can plot again. 
+
+#better method: when you indentified the ID of the mistake:
+FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")|> dplyr::filter(CockleObs_ID!=1531) #and then plot
+
+#but there is another outlier: 3mm length, 15 mm thick
+FactCockleSize|> dplyr::filter(thickness_mm>10 &length_mm<5) #gives the ID 469, remove this one as well
+FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")|> dplyr::filter(CockleObs_ID!=1531, CockleObs_ID!=469)
+  
 ```
 
 Further explore the plot with a regression line through all the data
