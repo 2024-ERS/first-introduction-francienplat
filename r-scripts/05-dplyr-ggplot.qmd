@@ -75,27 +75,68 @@ FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PAC
 
 #but there is another outlier: 3mm length, 15 mm thick
 FactCockleSize|> dplyr::filter(thickness_mm>10 &length_mm<5) #gives the ID 469, remove this one as well
-FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")|> dplyr::filter(CockleObs_ID!=1531, CockleObs_ID!=469)
+FactCockleSize <- readr::read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSpormjGiM4uWMTIZYm9Upt5j1Ige_Wu9CrhGGdvjXwxmHP2R6S7JDyEmiGTn3fXihl5s5yBn_sdo8h/pub?gid=1538766002&single=true&output=csv")|> dplyr::filter(CockleObs_ID!=1531, CockleObs_ID!=469)|> dplyr::mutate(year=factor(year))
   
+print(FactCockleSize)
 ```
 
+dplyr:
+filter: select particular rows
+select: select particular variables columns
+mutate: transform calculate a variable
+group_by: make group
+summary: calculate
 Further explore the plot with a regression line through all the data
 
 ```{r}
+#plot data with regression line
+ggplot2::ggplot(data=FactCockleSize,
+                mapping=aes(x=length_mm,y=thickness_mm)) + 
+   geom_point()+ geom_smooth(method = "lm")
+
+#calculate the linear regression
+model_lm<-lm(thickness_mm~length_mm, data = FactCockleSize)#(y~x)
+summary(model_lm)
+#equation of the regression line :thickness_mm= 0.70*length_mm - 0.35
+# y=b0+b1x
+
+#so, a cockle of length 20 mm has a predicted width of:
+0.70*20 - 0.35 #=13.65 mm
+#this regression is significant, because R2=0.90, p<0.001
 ```
 
 Make same plot but showing a separate regression line per year
 
 ```{r}
 # color the points by year, but plot one regression line
+ggplot2::ggplot(data=FactCockleSize,
+                mapping=aes(x=length_mm,y=thickness_mm)) + 
+  geom_point(mapping =aes(col=year))+
+  geom_smooth(method = "lm")
 ```
 
 Make a panel plot where with each year is shown as a separate graph
 
 ```{r}
+ggplot2::ggplot(data=FactCockleSize,
+                mapping=aes(x=length_mm,y=thickness_mm)) + 
+  geom_point(mapping =aes(col=year))+
+  geom_smooth(method = "lm")+
+  facet_wrap(~year)
+#but there are years without data:
+#taka dataset out of mapping, and pipe
+
+drop_na(FactCockleSize)|>
+ggplot2::ggplot(mapping=aes(x=length_mm,y=thickness_mm)) + 
+  geom_point(mapping =aes(col=year),size=2)+
+  xlab("Cockle length (mm)")+
+  ylab("Cockle width (mm)")+
+  geom_smooth(method = "lm")+
+  facet_wrap(~year)
+
 ```
 
 We conclude from this that: \* there were two important outliers in the
 dataset that were removed after visual inspection \* the regression
-between length and width is abou the same for every year, we safely can
+between length and width is about the same for every year, we safely can
 use only length as a proxy for the biomass of an individual cockle
